@@ -1,0 +1,106 @@
+Wprowadzenie
+
+Stroną, dla której wykonamy projekt testowy, a więc napiszemy testy jest fakestore.testelka.pl.
+Sklep jest postawiony na WordPressie, a moduł sprzedaży to WooCommerce.
+Płatności dokonywane są za pomocą bramki płatności Stripe i dedykowanej wtyczki umożliwiającej integrację sklepu z tą bramką.
+Na potrzeby tego zadania zakładamy, że wszystkie trzy rzeczy będą regularnie aktualizowane tak często, jak będą dostępne ich nowe wersje.
+Trzeba zatem regularnie potwierdzać, że po każdej kolejnej aktualizacji najważniejsze funkcjonalności nadal działają jak powinny
+i do tego w tym zadaniu będziemy potrzebować testów automatycznych.
+
+Zakres zadania
+
+Twoim zadaniem jest napisanie testów regresyjnych, które mogły by być uruchamianie po każdej aktualizacji WooCommerce, Stripe albo WordPressa.
+Zadaniem tym testów będzie potwierdzenie, że poniżej wymienione wymagania są nadal spełnione i nic się nie popsuło po aktualizacji.
+W ramach tego projektu do najważniejszych funkcjonalności zaliczyłam proces od momentu dodania produktu do koszyka, aż po płatność
+i tylko tego procesu będą dotyczyły poniższe wymagania. Resztę pominiemy i nie będziemy tworzyć testów do innych części sklepu.
+Poniżej lista akcji, których działanie chcemy weryfikować testami regresyjnymi (to na ich podstawie zbudujesz przypadki testowe):
+•	użytkownik ma możliwość dodania wybranej wycieczki do koszyka ze strony tej wycieczki,
+•	użytkownik ma możliwość dodania wybranej wycieczki do koszyka ze strony kategorii,
+•	użytkownik ma możliwość dodania co najmniej 10 wycieczek do koszyka (w sumie i w dowolnej kombinacji),
+•	użytkownik ma możliwość wybrania ilości wycieczek, które chce zakupić, na stronie produktu (np. dla zamówienia dla kilku osób),
+•	użytkownik ma możliwość dodania 10 różnych wycieczek do koszyka,
+•	użytkownik ma możliwość zmiany ilości wybranej wycieczki (pojedynczej pozycji) na stronie koszyka,
+•	użytkownik ma możliwość usunięcia wycieczki na stronie koszyka (całej pozycji),
+•	użytkownik jest informowany o błędach w formularzu na stronie płatności poprzez odpowiednie komunikaty,
+•	użytkownik ma możliwość zalogowania się na stronie płatności i dokonać płatności jako zalogowany użytkownik,
+•	użytkownik ma możliwość założenia konta na stronie płatności i dokonać jednocześnie płatności,
+•	użytkownik ma możliwość dokonania zakupu bez zakładania konta,
+•	użytkownik, który posiada konto może zobaczyć swoje zamówienia na swoim koncie,
+•	użytkownik po dokonaniu zamówienia może zobaczyć podsumowanie, które zawiera numer zamówienia, poprawną datę, kwotę, metodę płatności, nazwę i ilość zakupionych produktów.
+Strona koszyka to: https://fakestore.testelka.pl/koszyk/
+A strona płatności: https://fakestore.testelka.pl/zamowienie/
+Założenia i wykluczenia
+
+Dokonamy tutaj kilku założeń. Weź je pod uwagę w trakcie pisania testów automatycznych.
+Wykluczenia
+•	Nie testujemy bramki płatności Stripe i komunikatów jej dotyczących;
+    wybieramy zatem jako metodę płatności tą domyślną podaną na stronie płatności na Fakestore,
+    zaraz powyżej pól do danych karty (czyli karta o numerze 4242424242424242 z dowolnym kodem CVC oraz prawidłową datą ważności).
+•	Na potrzeby tego zadania, pomijamy testowanie powiadomień mailowych.
+•	Nie testuj wszystkich kombinacji nieprawidłowych kodów pocztowych. Wystarczy, że sprawdzisz, że jak to pole jest puste,
+    to przy próbie zakupu wyświetla się odpowiedni komunikat.
+•	Pomijamy testowanie kuponów rabatowych.
+•	Nie testujemy procesu zakładania konta. Potwierdź tylko, że możesz zamówić produkt z jednoczesnym założeniem konta.
+•	Nie testujemy stanu magazynowego (czyli ilości dostępnych produktów).
+•	Na stronie płatności nie testujemy nieobowiązkowych pól.
+
+Założenia
+•	Zakładamy, że obecne działanie strony jest prawidłowe, a w szczególności, że wyświetlane komunikaty są w porządku (chyba, że coś jest nieprzetłumaczone).
+•	Po każdym teście, w którym tworzysz nowe konto, usuń stworzonego użytkownika (link „Usuń konto” dostępny jest z kokpitu w „Moim koncie” po zalogowaniu).
+•	Testy powinny działać zarówno na Chrome i Firefoxa (po prostu potwierdź, że Twoje testy działają na obu przeglądarkach;
+    konfigurację na stałe możesz mieć tylko w jednej). Żeby sobie ułatwić życie i pracę skorzystaj z WebDriverManager, który sam ogarnie odpowiednie drivery.
+•	Zadanie robimy jeszcze bez Page Object Model.
+•	Testy mają się uruchamiać lokalnie.
+
+Sugestie i podpowiedzi
+
+Przypominam kilka zasad, o których mówiłam już po drodze w kursie ale także kilka dodatkowych sugestii jak się za to zabrać.
+•	Po pierwsze nie panikuj jeżeli nie wiesz do końca jak się za to zabrać. To zadanie nie jest ani sprawdzianem ani potwierdzeniem Twoich umiejętności.
+    Jest natomiast narzędziem do nauki trochę innych umiejętności, niż do tej pory. Zrób jak Ci się wydaje, że będzie najlepiej.
+    Później porównasz to z moim rozwiązaniem i podyskutujemy o różnych podejściach 😉 Bo przypominam, że można to ogarnąć na wiele sposobów. A jak się zatniesz to zajrzyj do sekcji.
+•	Zacznij od krótkiego zapoznania się ze stroną i stroną płatności.
+•	Nie pisz wszystkich testów w jednej klasie, bo możesz się pogubić. Spróbuj je podzielić np. na dwie klasy (grupy testów) w zależności od tego
+    co w danym teście weryfikujesz (ale jak nie wiesz jak to nie rób tego na siłę).
+•	Nie testuj absolutnie wszystkich możliwości i kombinacji danych. Naszym celem jest jedynie weryfikacja, że akcje podane w wymaganiach działają
+    (przypadki pozytywne) i że komunikaty błędów są prawidłowe.
+•	Przypomnij sobie lekcje o podstawowych zasadach programowania – bardzo Ci się przydadzą (DRY, KISS, YAGNI).
+•	Staraj się nie powtarzać w kodzie. W tym celu używaj odpowiednich adnotacji (BeforeEach i AfterEach w JUnit), metod opakowujących jakąś jedną
+    logicznie spójną całość (jakąś operację), której używasz w testach wielokrotnie.
+•	Staraj się tworzyć testy o rozsądnej długości – testuj jedną wydzieloną rzecz na raz.
+•	Stosuj jedną asercję w jednym teście, ewentualnie asercję grupowaną (było o tym tutaj).
+•	Nie przesadź z optymalizacją kodu. Staraj się nie dublować kodu, ale jednocześnie Twój kod powinien być czytelny i zrozumiały np. dla kogoś,
+    kto tych testów nie pisał. Postaraj się znaleźć złoty środek.
+•	Nie zapomnij dodać odpowiednich zależności w Mavenie (Selenium oraz JUnit). Możesz w tym celu skorzystać z mvnrepository.com.
+•	Z trudniejszych rzeczy to na pewno przydadzą Ci się lekcje o Explicit Wait, Expected Conditions, ramkach i JavaScript.
+•	Zmienne i metody nazywaj po angielsku.
+
+Mało? StareTesty.Zadania dodatkowe
+
+Jeżeli jednak czujesz, że potrzebujesz większego wyzwania to możesz także:
+•	przetestować bramkę płatności Stripe w trybie zwykłym, 3D Secure i odrzuconej płatności (numery kart jakich możesz użyć dostępne są w dokumentacji Stripe);
+    przetestować także komunikaty błędów w tej bramce; użyj poniższych kart: https://stripe.com/docs/testing#three-ds-cards
+•	dodać wykonywanie screenshotów, gdy test sfailuje;
+•	stworzyć testy do uruchamiania w gridzie (czyli użyj RemoteWebDrivera i postaw sobie jakiegoś prostego grida);
+•	zacząć budować framework testowy, jeżeli wiesz jak (jeżeli nie to spokojnie, zaraz będziemy to robić w kursie).
+Dodatkowa dokumentacja
+
+Zostawię tutaj tylko link do króciutkiej dokumentacji znajdującej się bezpośrednio na stronie sklepu: dokumentacja do fakestore.
+Może się przydać jak będziecie chcieli się pobawić stroną już poza zakresem tego zadania.
+
+Helpunku!
+
+Gdzieś się zacięłaś? Utknąłeś na jakimś kroku? Jeżeli naprawdę nie wiesz jak poradzić sobie ze swoim problemem i nie wiesz co jeszcze możesz zrobić, sprawdź czy poniżej nie ma odpowiedzi na Twój problem. Jeżeli nie, zapytaj w komentarzu.
+Przy użyciu metody sendKeys() litery wpisują się w innej kolejności niż tego oczekuję
+Pomoże Ci… wolniejsze wpisywanie tekstu. Wystarczy poniższa metoda. Użyj jej tylko tam, gdzie musisz, żeby nie wydłużyć niebezpiecznie czasu trwania testów.
+1.	private void slowType(WebElement element, String text) {
+2.	for (int i = 0; i < text.length(); i++) {
+3.	element.sendKeys(Character.toString(text.charAt(i)));
+4.	}
+5.	}
+Metoda ta rozbiera stringa na pojedyncze znaki i wprowadza je osobno. Każdego chara musi też po drodze przerobić na stringa, parametr tego typu musi być podany metodzie sendKeys().
+Firefox nie radzi sobie z listą rozwijaną
+Rzeczywiście, Firefox coś nie może ogarnąć obiektu typu Select. Rozwiązaniem jest potraktowanie listy rozwijanej jak każdego innego elementu. Czyli najpierw musimy go namierzyć i w niego kliknąć, żeby rozwinęła się lista opcji, a potem musimy namierzyć wybraną opcję, jak zwykły element i również w nią kliknąć. Sprawdź te elementy używając szukajki w konsoli developerskiej (F12), bo to wcale nie musi być obiekt o tagu select, jak Ci się może wydawać.
+Interakcja z elementem na Firefox nie działa (wpisanie tekstu, kliknięcie itp.)
+Jeżeli obiekt jest dobrze zlokalizowany i nie dostajesz żadnego błędu, że jest nieklikalny albo że nie istnieje, spróbuj się do niego najpierw przescrollować za pomocą JavaScript.
+1.	((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", element);
+Reader Interactions
