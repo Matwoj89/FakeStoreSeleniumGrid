@@ -1,0 +1,4 @@
+[0226/201221.554:ERROR:process_reader_win.cc(108)] process 10140 not found
+[0226/201221.557:ERROR:exception_snapshot_win.cc(98)] thread ID 6164 not found in process
+[0226/201221.557:ERROR:scoped_process_suspend.cc(40)] NtResumeProcess: Podjêto próbê uzyskania dostêpu do procesu koñcz¹cego dzia³anie. (0xc000010a)
+[1012/173358.435:ERROR:directory_reader_win.cc(43)] FindFirstFile: System nie mo¿e odnaleŸæ okreœlonej œcie¿ki. (0x3)
